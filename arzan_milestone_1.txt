@@ -1,0 +1,8 @@
+Section 3
+
+Jonathan is a college graduate student and is looking to apply for jobs in the United States of America. In an effort to narrow his search, Jonathan would like to research the crime profiles of various major cities and select the ones with the lowest crime rates. When Jonathan logs into the app, he will be able interact with the data by selecting the cities and the time period over which he wants to analyze the cities’ total crime rate. Jonathan would also be able to select the types of crime and investigate each type of crime separately . By looking at the data over a time period, Jonathan could observe which towns have become safer or riskier over time and by exploring individual crimes in his candidate cities, he can be further discover which crimes in particular he needs to safeguard against.
+
+
+Section 4
+
+The app will have a a single landing page. The user will be able to interact with the app by selecting up to two cities from a drop down menu and setting a time period on a slider. Furthermore, tabs at the top of the visualization will allow them to switch between the total and individual crime rates in the cities selected. The visualizations will be line graphs with colours used to differentiate between the cities.
