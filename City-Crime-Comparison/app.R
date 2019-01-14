@@ -38,11 +38,12 @@ ui <- fluidPage(
     ),
     mainPanel(
       tabsetPanel(
-        tabPanel("Total", plotOutput("raw_graph"), plotOutput("normalized_graph")),
+        tabPanel("Total", value = "violent_crime", plotOutput("raw_graph"), plotOutput("normalized_graph")),
         tabPanel("Homicide", plotOutput(""), plotOutput("")),
         tabPanel("Rape", plotOutput(""), plotOutput("")),
         tabPanel("Robbery", plotOutput(""), plotOutput("")),
-        tabPanel("Aggravated Assualt", plotOutput(""), plotOutput(""))
+        tabPanel("Aggravated Assualt", plotOutput(""), plotOutput("")),
+        id = "main_tab"
       )
     )
   )
@@ -55,6 +56,9 @@ server <- function(input, output) {
         filter(between(year, input$yearInput2[1], input$yearInput2[2]),
                department_name == input$city1Input[1] | department_name == input$city2Input[1])
   )
+  
+  observe(print(input$main_tab))
+  
   output$raw_graph = renderPlot(
     ucr_crime_filtered () %>% 
       ggplot(aes(x=year, y = violent_crime, group = department_name, color = department_name))+
