@@ -35,7 +35,7 @@ ui <- fluidPage(
       )
     ),
     mainPanel(
-      tabsetPanel( id = 'tabs', selected = 'homs_sum-homs_per_100k',
+      tabsetPanel( id = 'tabs', selected = 'violent_crime-violent_per_100k',
         tabPanel("Total", value = 'violent_crime-violent_per_100k', plotOutput("raw_graph1"), plotOutput("normalized_graph1")),
         tabPanel("Homicide", value = 'homs_sum-homs_per_100k', plotOutput("raw_graph2"), plotOutput("normalized_graph2")),
         tabPanel("Rape",value = 'rape_sum-rape_per_100k', plotOutput("raw_graph3"), plotOutput("normalized_graph3")),
@@ -48,7 +48,13 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  observe(print(eval(variables()[[1]][2])))
+  
+  y_labels <- list('violent_crime' = 'Total Violent Crime', 'violent_per_100k' = 'Violent Crime per 100k', 
+                   'homs_sum' = 'Total Homicides', 'homs_per_100k' = 'Homicides per 100k',
+                   'rape_sum' = 'Total Rapes', 'rape_per_100k' = 'Rapes per 100k',
+                   'rob_sum' = 'Total Robberies', 'rob_per_100k' = 'Robberies per 100k',
+                   'agg_ass_sum' = 'Total Aggrevated Assualt', 'agg_ass_per_100k' = 'Aggrevated Assualt per 100k')
+  
   variables <- reactive(
     str_split(input$tabs, '-')
   )
@@ -58,19 +64,27 @@ server <- function(input, output) {
         filter(between(year, input$yearInput2[1], input$yearInput2[2]),
                department_name == input$city1Input[1] | department_name == input$city2Input[1])
   )
+  
   output$raw_graph1 <- output$raw_graph2 <- output$raw_graph3 <- output$raw_graph4 <- output$raw_graph5 <- renderPlot(
       ucr_crime_filtered() %>%
       ggplot(aes_string(x='year', y = variables()[[1]][1], group = 'department_name', color = 'department_name'))+
-      geom_line() +
+      geom_line(size = 1.5) +
       xlab('Year') +
-      ylab(variables()[[1]][1])
+      ylab(y_labels[variables()[[1]][1]]) +
+      labs(colour = "City") +
+      scale_color_manual(values = c('#d8b365', '#5ab4ac')) +
+      theme_bw()
   )
+  
   output$normalized_graph1 <- output$normalized_graph2 <- output$normalized_graph3 <- output$normalized_graph4 <- output$normalized_graph5 <-  renderPlot(
     ucr_crime_filtered() %>%
       ggplot(aes_string(x='year', y = variables()[[1]][2], group = 'department_name', color = 'department_name'))+
-      geom_line() +
+      geom_line(size = 1.5) +
       xlab('Year') +
-      ylab(variables()[[1]][2])
+      ylab(y_labels[variables()[[1]][2]]) +
+      labs(colour = "City") +
+      scale_color_manual(values = c('#d8b365', '#5ab4ac')) +
+      theme_bw()
   )
 
 }
