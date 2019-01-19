@@ -10,7 +10,7 @@
 library(shiny)
 library(tidyverse)
 
-ucr_crime <- read.csv("../data/ucr_crime_1975_2015.csv", stringsAsFactors = FALSE)
+ucr_crime <- read.csv("ucr_crime_1975_2015.csv", stringsAsFactors = FALSE)
 cities <- as.list(unique(ucr_crime$department_name))
 
 # Define UI for application that draws a histogram
@@ -23,19 +23,21 @@ ui <- fluidPage(
     sidebarPanel(
       selectInput("city1Input", label = h3("City 1"),
                   choices = cities,
-                  selected = 1),
+                  selected = 1,
+                  selectize = TRUE),
 
       selectInput("city2Input", label = h3("City 2"),
                   choices = cities,
-                  selected = 'Atlanta'),
+                  selected = 'Atlanta',
+                  selectize = TRUE),
 
       sliderInput("yearInput2", label = h3("Year Range"), step = 5,
-                  min = 1975, max = 2015, value = c(1980,2000),
+                  min = 1975, max = 2015, value = c(1975,2015),
                   sep = ""
       )
     ),
     mainPanel(
-      tabsetPanel( id = 'tabs', selected = 'violent_crime-violent_per_100k',
+      tabsetPanel( id = 'tabs', selected = 'rape_sum-rape_per_100k',
         tabPanel("Total", value = 'violent_crime-violent_per_100k', plotOutput("raw_graph1"), plotOutput("normalized_graph1")),
         tabPanel("Homicide", value = 'homs_sum-homs_per_100k', plotOutput("raw_graph2"), plotOutput("normalized_graph2")),
         tabPanel("Rape",value = 'rape_sum-rape_per_100k', plotOutput("raw_graph3"), plotOutput("normalized_graph3")),
