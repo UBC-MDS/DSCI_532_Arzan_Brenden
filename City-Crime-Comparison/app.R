@@ -12,17 +12,20 @@ library(tidyverse)
 
 # Load Data
 ucr_crime <- read.csv("ucr_crime_1975_2015.csv", stringsAsFactors = FALSE)
+ucr_crime <- ucr_crime %>% 
+  filter(department_name != "National")
 
 # Get cities for selection controls
 cities <- as.list(unique(ucr_crime$department_name))
 
 # Compute Average Statistics
 ucr_avg_crime <- ucr_crime %>% 
-  filter(department_name != "National") %>% 
   group_by(year) %>% 
   summarise(avg_violent_crime = mean(violent_crime, na.rm = TRUE), avg_homs = mean(homs_sum, na.rm = TRUE), 
             avg_rape = mean(rape_sum, na.rm = TRUE),avg_rob = mean(rob_sum, na.rm = TRUE),  
-            avg_agg_ass = mean(agg_ass_sum, na.rm = TRUE))
+            avg_agg_ass = mean(agg_ass_sum, na.rm = TRUE), avg_violent_100k = mean(violent_per_100k, na.rm = TRUE),
+            avg_homs_100k = mean(homs_per_100k, na.rm = TRUE), avg_rape_100k = mean(rape_per_100k, na.rm = TRUE),
+            avg_robs_100k = mean(rob_per_100k, na.rm = TRUE), avg_agg_ass_100k = mean(agg_ass_per_100k, na.rm = TRUE))
 
 
 # Define UI for application that draws a histogram
@@ -44,13 +47,16 @@ ui <- fluidPage(
       )
     ),
     mainPanel(
-      tabsetPanel( id = 'tabs', selected = 'violent_crime-violent_per_100k-avg_violent_crime',
-        tabPanel("Total", value = 'violent_crime-violent_per_100k-avg_violent_crime', 
+      tabsetPanel( id = 'tabs', selected = 'violent_crime-violent_per_100k-avg_violent_crime-avg_violent_100k',
+        tabPanel("Total", value = 'violent_crime-violent_per_100k-avg_violent_crime-avg_violent_100k', 
                  plotOutput("raw_graph1"), plotOutput("normalized_graph1")),
-        tabPanel("Homicide", value = 'homs_sum-homs_per_100k-avg_homs', plotOutput("raw_graph2"), plotOutput("normalized_graph2")),
-        tabPanel("Rape",value = 'rape_sum-rape_per_100k-avg_rape', plotOutput("raw_graph3"), plotOutput("normalized_graph3")),
-        tabPanel("Robbery", value = 'rob_sum-rob_per_100k-avg_rape', plotOutput("raw_graph4"), plotOutput("normalized_graph4")),
-        tabPanel("Aggravated Assualt", value = 'agg_ass_sum-agg_ass_per_100k-avg_agg_ass', 
+        tabPanel("Homicide", value = 'homs_sum-homs_per_100k-avg_homs-avg_homs_100k', 
+                 plotOutput("raw_graph2"), plotOutput("normalized_graph2")),
+        tabPanel("Rape",value = 'rape_sum-rape_per_100k-avg_rape-avg_rape_100k', 
+                 plotOutput("raw_graph3"), plotOutput("normalized_graph3")),
+        tabPanel("Robbery", value = 'rob_sum-rob_per_100k-avg_rape-avg_rape_100k',
+                 plotOutput("raw_graph4"), plotOutput("normalized_graph4")),
+        tabPanel("Aggravated Assualt", value = 'agg_ass_sum-agg_ass_per_100k-avg_agg_ass-avg_agg_ass_100k', 
                  plotOutput("raw_graph5"), plotOutput("normalized_graph5"))
       )
     )
@@ -59,8 +65,6 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  
-  observe(print(variables()[[1]][3]))
   
   y_labels <- list('violent_crime' = 'Total Violent Crime', 'violent_per_100k' = 'Violent Crime per 100k', 
                    'homs_sum' = 'Total Homicides', 'homs_per_100k' = 'Homicides per 100k',
@@ -100,18 +104,23 @@ server <- function(input, output) {
   )
   
   output$normalized_graph1 <- output$normalized_graph2 <- output$normalized_graph3 <- output$normalized_graph4 <- output$normalized_graph5 <-  renderPlot(
-    ucr_crime_filtered() %>%
-      ggplot(aes_string(x='year', y = variables()[[1]][2], group = 'department_name', color = 'department_name'))+
-      geom_line(size = 1.5) +
-      xlab('Year') +
-      ylab(y_labels[variables()[[1]][2]]) +
-      labs(colour = "City") +
-      scale_color_brewer(palette = "Spectral", type = "div") +
-      theme_bw() + 
-      theme(legend.title = element_text(size = 12),
-            legend.text = element_text(size = 11)
-      )
+      ggplot() +
+        geom_line(data = ucr_avg_crime_filtered(), aes_string(x='year', y = variables()[[1]][4]),
+                  linetype = "dashed", color = "grey") +
+        geom_line(data = ucr_crime_filtered(), aes_string(x='year', 
+                                                              y = variables()[[1]][2], group = 'department_name', 
+                                                              color = 'department_name'), size = 1.5) +
+        xlab('Year') +
+        ylab(y_labels[variables()[[1]][2]]) +
+        labs(colour = "City") +
+        scale_color_brewer(palette = "Spectral", type = "div") +
+        theme_bw() + 
+        theme(legend.title = element_text(size = 12),
+              legend.text = element_text(size = 11)
+             )
   )
+  
+  observe(print(variables()[[1]]))
 
 }
 
