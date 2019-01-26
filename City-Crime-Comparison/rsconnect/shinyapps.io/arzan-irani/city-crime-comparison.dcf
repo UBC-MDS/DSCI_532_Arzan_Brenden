@@ -5,6 +5,6 @@ account: arzan-irani
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 643844
-bundleId: 1815567
+bundleId: 1838819
 url: https://arzan-irani.shinyapps.io/city-crime-comparison/
-when: 1547565502.98894
+when: 1548534780.59363
