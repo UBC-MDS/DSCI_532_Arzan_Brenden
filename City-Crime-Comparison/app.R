@@ -51,6 +51,12 @@ ui <- fluidPage(
       )
     ),
     mainPanel(
+      
+      # A question to lead the user into engaging with the interface
+      h3("Which city do you think has the highest increase in crime rate?"),
+      helpText("The average of all the cities is the dotted grey line"
+      ),
+      
       # Create tabs for the different categories of violent crime 
       tabsetPanel( id = 'tabs', selected = 'violent_crime-violent_per_100k-avg_violent_crime-avg_violent_100k',
         tabPanel("Total", value = 'violent_crime-violent_per_100k-avg_violent_crime-avg_violent_100k', 
